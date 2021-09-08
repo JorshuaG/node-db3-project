@@ -32,16 +32,12 @@ const checkSchemeId = async (req, res, next) => {
     "message": "invalid scheme_name"
   }
 */
-const validateScheme = async (req, res, next) => {
-  try {
-    const { scheme_name } = req.body;
-    if (!scheme_name || scheme_name === "" || typeof scheme_name !== "string") {
-      res.status(400).json({ message: "invalid scheme_name" });
-    } else {
-      next();
-    }
-  } catch (err) {
-    next(err);
+const validateScheme = (req, res, next) => {
+  const { scheme_name } = req.body;
+  if (!scheme_name || typeof scheme_name !== "string" || !scheme_name.trim()) {
+    next({ status: 400, message: "invalid scheme_name" });
+  } else {
+    next();
   }
 };
 
@@ -54,21 +50,19 @@ const validateScheme = async (req, res, next) => {
     "message": "invalid step"
   }
 */
-const validateStep = async (req, res, next) => {
-  try {
-    const { instructions, step_number } = req.body;
-    if (
-      !instructions ||
-      instructions === "" ||
-      typeof instructions !== "number" ||
-      typeof step_number !== "number" ||
-      step_number < 1
-    ) {
-      res.status(400).json({ message: "invalid step" });
-    }
-  } catch (err) {
-    next(err);
+const validateStep = (req, res, next) => {
+  const { instructions, step_number } = req.body;
+  if (
+    !instructions ||
+    !instructions.trim() ||
+    typeof instructions !== "string" ||
+    !step_number ||
+    isNaN(step_number) ||
+    step_number < 1
+  ) {
+    next({ status: 400, message: "invalid step" });
   }
+  next();
 };
 
 module.exports = {
